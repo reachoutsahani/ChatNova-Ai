@@ -1,0 +1,69 @@
+/* ============================================
+   SHARED CSS VARIABLES FOR COMPONENTS
+   Centralized styling variables - ChatGPT-style Dark Theme
+   ============================================ */
+
+:root {
+  /* Chat Colors - Dark Grey Palette (ChatGPT Style) */
+  --chat-bg-main: #0d0d0d;
+  --chat-bg-sidebar: #111111;
+  --chat-bg-chat: #0d0d0d;
+  --chat-bg-input: #1a1a1a;
+  --chat-bg-user-msg: #1f1f1f;
+  --chat-bg-ai-msg: #161616;
+
+  /* Text Colors */
+  --chat-text-primary: #ffffff;
+  --chat-text-secondary: #8b8b8b;
+  --chat-text-light: #cccccc;
+
+  /* Accent - Neutral Grey */
+  --chat-accent: #ffffff;
+  --chat-accent-hover: #e0e0e0;
+  --chat-accent-light: #d9d9d9;
+
+  /* Status Colors */
+  --chat-error: #ef4444;
+  --chat-success: #10b981;
+  --chat-warning: #f59e0b;
+
+  /* Borders */
+  --chat-border: rgba(255, 255, 255, 0.1);
+  --chat-border-light: rgba(255, 255, 255, 0.05);
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Font Sizes */
+  --chat-font-xs: 0.75rem;
+  --chat-font-sm: 0.875rem;
+  --chat-font-base: 1rem;
+  --chat-font-lg: 1.125rem;
+  --chat-font-xl: 1.25rem;
+
+  /* Font Weights */
+  --chat-font-weight-normal: 400;
+  --chat-font-weight-medium: 500;
+  --chat-font-weight-semibold: 600;
+  --chat-font-weight-bold: 700;
+
+  /* Border Radius */
+  --chat-radius-sm: 0.375rem;
+  --chat-radius-md: 0.5rem;
+  --chat-radius-lg: 0.75rem;
+  --chat-radius-xl: 1rem;
+
+  /* Transitions */
+  --chat-transition-fast: 150ms ease-in-out;
+  --chat-transition-base: 200ms ease-in-out;
+  --chat-transition-slow: 300ms ease-in-out;
+
+  /* Gutters */
+  --chat-gutter-mobile: 1rem;
+  --chat-gutter-tablet: 1.5rem;
+}

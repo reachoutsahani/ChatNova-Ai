@@ -1,0 +1,312 @@
+/* ============================================
+   INPUT SECTION STYLES
+   Message compose area - ChatGPT Style
+   ============================================ */
+
+@import "./variables.css";
+
+.input-section {
+  padding: 1rem;
+  background: #0d0d0d;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  position: relative;
+  width: 100%;
+}
+
+.message-input {
+  flex: 1;
+  padding: 0.875rem 1.125rem;
+  padding-right: 3rem;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: var(--chat-text-primary);
+  font-size: var(--chat-font-base);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  resize: none;
+  max-height: 120px;
+  transition: all 0.2s ease;
+  line-height: 1.5;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.message-input:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #252525;
+}
+
+.message-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: #252525;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+
+.message-input::placeholder {
+  color: var(--chat-text-secondary);
+  font-weight: 400;
+}
+
+.message-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.send-btn {
+  padding: 0.5rem;
+  background: #ffffff;
+  border: none;
+  border-radius: 6px;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.send-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+  pointer-events: none;
+}
+
+.send-btn:hover:not(:disabled):not(.disabled) {
+  background: #e6e6e6;
+  transform: scale(1.05);
+}
+
+.send-btn:active:not(:disabled):not(.disabled) {
+  transform: scale(0.95);
+}
+
+.send-btn:disabled,
+.send-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #666666;
+}
+
+.send-btn:focus-visible {
+  outline: 1px solid #000;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   LOADING ANIMATION
+   ============================================ */
+.loading-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   MOBILE OPTIMIZATION
+   ============================================ */
+@media (max-width: 479px) {
+  .input-section {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .message-input {
+    padding: 0.75rem 1rem;
+    padding-right: 2.75rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+
+  .send-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ============================================
+   TABLET
+   ============================================ */
+@media (min-width: 480px) and (max-width: 767px) {
+  .input-section {
+    padding: 1rem;
+  }
+
+  .message-input {
+    min-height: 44px;
+  }
+
+  .send-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ============================================
+   DESKTOP
+   ============================================ */
+@media (min-width: 768px) {
+  .input-section {
+    padding: 1.25rem 1rem;
+  }
+
+  .message-input {
+    min-height: 44px;
+  }
+
+  .send-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+.send-btn:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Loading state animation */
+.send-btn.loading .loading-icon {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Arrow animation on hover */
+.send-btn:not(.loading):not(:disabled):not(.disabled) svg {
+  transition: transform 0.2s ease;
+}
+
+.send-btn:hover:not(.loading):not(:disabled):not(.disabled) svg {
+  transform: translateX(2px);
+}
+
+.input-hint {
+  font-size: var(--chat-font-xs);
+  color: var(--chat-text-secondary);
+  margin: 0.625rem 0 0 0;
+  text-align: center;
+  font-weight: 500;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.input-section:hover .input-hint {
+  opacity: 1;
+}
+
+kbd {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 0.8em;
+  color: #cccccc;
+  font-weight: 500;
+  display: inline-block;
+  transition: all 0.15s ease;
+}
+
+kbd:hover {
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 479px) {
+  .input-section {
+    padding: 1rem 0.75rem;
+  }
+
+  .input-wrapper {
+    gap: 0.5rem;
+  }
+
+  .message-input {
+    padding: 0.75rem 1rem;
+    padding-right: 2.75rem;
+    font-size: var(--chat-font-sm);
+  }
+
+  .send-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .send-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .input-hint {
+    font-size: 0.65rem;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .input-section {
+    padding: 1.125rem 1rem;
+  }
+
+  .message-input {
+    padding-right: 2.875rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .input-section {
+    padding: 1.5rem;
+  }
+
+  .message-input {
+    padding: 1rem;
+    padding-right: 3.25rem;
+    font-size: var(--chat-font-base);
+  }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .send-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+}

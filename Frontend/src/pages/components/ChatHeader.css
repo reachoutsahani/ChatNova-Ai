@@ -1,0 +1,144 @@
+/* ============================================
+   CHAT HEADER STYLES
+   Top navigation bar - ChatGPT Style
+   ============================================ */
+
+@import "./variables.css";
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: #0d0d0d;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: auto;
+  min-height: 64px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.menu-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--chat-text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.menu-toggle-btn:hover {
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.menu-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.menu-toggle-btn:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.chat-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--chat-text-primary);
+  letter-spacing: -0.3px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   MOBILE - ALWAYS SHOW TOGGLE
+   ============================================ */
+@media (max-width: 479px) {
+  .chat-header {
+    padding: 0.75rem;
+    min-height: 56px;
+  }
+
+  .menu-toggle-btn {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    display: flex;
+  }
+
+  .chat-title {
+    font-size: 1rem;
+    flex: 1;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .chat-header {
+    padding: 1rem;
+    min-height: 64px;
+  }
+
+  .menu-toggle-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+  }
+
+  .chat-title {
+    font-size: 1.125rem;
+    flex: 1;
+  }
+}
+
+/* ============================================
+   DESKTOP - OPTIONAL TOGGLE
+   ============================================ */
+@media (min-width: 768px) {
+  .chat-header {
+    justify-content: flex-start;
+    padding: 1.25rem 1.5rem;
+    min-height: 64px;
+  }
+
+  .header-content {
+    flex: 1;
+  }
+
+  .menu-toggle-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+  }
+
+  .chat-title {
+    font-size: 1.375rem;
+  }
+}

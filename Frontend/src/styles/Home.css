@@ -1,0 +1,117 @@
+/* ============================================
+   HOME PAGE (FULL DARK FIXED)
+============================================ */
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #0f172a; /* 🔥 FIXED */
+}
+
+/* HEADER */
+.home-header {
+  background: #020617;
+  padding: 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-header h1 {
+  margin: 0;
+  color: #f1f5f9;
+  font-size: 20px;
+}
+
+.logout-btn {
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* MAIN */
+.home-main {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #020617;
+  padding: 16px;
+  border-right: 1px solid #1e293b;
+  overflow-y: auto;
+}
+
+.new-chat-btn {
+  width: 100%;
+  padding: 10px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+/* CHAT LIST */
+.chat-item {
+  padding: 10px;
+  margin-bottom: 8px;
+  background: #1e293b;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #cbd5f5;
+}
+
+.chat-item:hover {
+  background: #334155;
+}
+
+/* CHAT AREA */
+.chat-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a; /* 🔥 FIXED */
+}
+
+/* WELCOME */
+.welcome-section {
+  text-align: center;
+  background: #020617;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+}
+
+.welcome-section h2 {
+  color: #f1f5f9;
+}
+
+.welcome-section p {
+  color: #94a3b8;
+}
+
+/* BUTTON */
+.primary-btn {
+  padding: 10px 20px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}

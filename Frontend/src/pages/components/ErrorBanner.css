@@ -1,0 +1,74 @@
+/* ============================================
+   ERROR BANNER STYLES
+   Error message display
+   ============================================ */
+
+@import "./variables.css";
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md, 1rem);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--chat-radius-lg);
+  margin-bottom: var(--spacing-md, 1rem);
+  gap: var(--spacing-md, 1rem);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 0.5rem);
+  flex: 1;
+}
+
+.error-icon {
+  font-size: var(--chat-font-lg);
+  flex-shrink: 0;
+}
+
+.error-message {
+  color: var(--chat-error);
+  font-size: var(--chat-font-sm);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.error-close-btn {
+  background: none;
+  border: none;
+  color: var(--chat-error);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--chat-radius-sm);
+  transition: all var(--chat-transition-fast);
+  flex-shrink: 0;
+}
+
+.error-close-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.1);
+}
+
+.error-close-btn:active {
+  transform: scale(0.95);
+}
+
+.error-close-btn:focus-visible {
+  outline: 2px solid var(--chat-error);
+}

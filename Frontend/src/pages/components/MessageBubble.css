@@ -1,0 +1,141 @@
+/* ============================================
+   MESSAGE BUBBLE STYLES
+   Individual message rendering - ChatGPT Style
+   ============================================ */
+
+@import "./variables.css";
+
+.message-bubble {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.75rem;
+  animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.message-bubble.user {
+  justify-content: flex-end;
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 0.875rem 1.125rem;
+  border-radius: 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-bubble.user .message-content {
+  background: #ffffff;
+  color: #000000;
+  border-radius: 12px 4px 12px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.message-bubble.user .message-content:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.message-bubble.ai .message-content {
+  background: #161616;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px 12px 12px 12px;
+}
+
+.message-bubble.ai .message-content:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: #1a1a1a;
+}
+
+.message-text {
+  margin: 0;
+  font-size: var(--chat-font-base);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  font-weight: 400;
+}
+
+.message-timestamp {
+  display: block;
+  font-size: var(--chat-font-xs);
+  color: var(--chat-text-secondary);
+  margin-top: 0.375rem;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.message-bubble.user .message-timestamp {
+  color: #888888;
+}
+
+.message-bubble.user:hover .message-timestamp {
+  color: #666666;
+}
+
+/* ============================================
+   TYPING ANIMATION
+   Blinking cursor effect for AI responses
+   ============================================ */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: currentColor;
+  margin-left: 2px;
+  animation: blink 0.7s infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 479px) {
+  .message-content {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+  }
+
+  .message-text {
+    font-size: var(--chat-font-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .message-content {
+    max-width: 60%;
+  }
+}
