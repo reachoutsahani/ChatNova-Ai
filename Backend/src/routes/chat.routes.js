@@ -3,12 +3,12 @@ const router = express.Router();
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// ✅ TEST ROUTE
+// ✅ TEST
 router.get("/test", (req, res) => {
   res.json({ message: "Chat route working ✅" });
 });
 
-// ✅ CHAT ROUTE
+// ✅ CHAT
 router.post("/", async (req, res) => {
   try {
     const { message, conversationHistory } = req.body;
@@ -22,8 +22,6 @@ router.post("/", async (req, res) => {
       headers: {
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": process.env.APP_URL || "http://localhost:3000",
-        "X-Title": "ChatNova AI",
       },
       body: JSON.stringify({
         model: "openai/gpt-4o-mini",
@@ -37,20 +35,17 @@ router.post("/", async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("OpenRouter Error:", data);
-      return res.status(response.status).json({ error: "API Error" });
+      console.error(data);
+      return res.status(500).json({ error: "API Error" });
     }
 
-    const reply =
-      data?.choices?.[0]?.message?.content || "No response";
+    const reply = data?.choices?.[0]?.message?.content || "No response";
 
     res.json({ reply });
 
   } catch (error) {
-    console.error("Chat Error:", error);
-    res.status(500).json({
-      error: "Something went wrong",
-    });
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

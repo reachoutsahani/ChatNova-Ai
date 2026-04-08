@@ -7,20 +7,11 @@ const chatRoutes = require("./routes/chat.routes");
 
 const app = express();
 
-// ✅ PERFECT CORS FIX
-const corsOptions = {
-  origin: [
-    "http://localhost:5173",   // local frontend
-    "https://your-frontend-url.vercel.app" // deployed frontend (change this)
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-
-// 🔥 IMPORTANT (preflight fix)
-app.options("*", cors(corsOptions));
+// ✅ SIMPLE & WORKING CORS
+app.use(cors({
+  origin: true,   // sab allow karega (safe for now)
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(cookieParser());
