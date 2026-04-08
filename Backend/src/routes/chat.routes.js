@@ -11,6 +11,12 @@ router.get("/test", (req, res) => {
 // ✅ CHAT
 router.post("/", async (req, res) => {
   try {
+    // 🔥 API KEY CHECK
+    if (!OPENROUTER_API_KEY) {
+      console.error("❌ API KEY MISSING");
+      return res.status(500).json({ error: "API key not configured" });
+    }
+
     const { message, conversationHistory } = req.body;
 
     if (!message) {
@@ -29,7 +35,7 @@ router.post("/", async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct", // ⚡ FAST MODEL
+        model: "mistralai/mistral-7b-instruct",
         messages: [
           ...(conversationHistory || []),
           { role: "user", content: message },
@@ -40,13 +46,19 @@ router.post("/", async (req, res) => {
 
     clearTimeout(timeout);
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (err) {
+      console.error("❌ Invalid JSON");
+      return res.status(500).json({ error: "Invalid response from AI" });
+    }
 
     console.timeEnd("AI Response");
 
     if (!response.ok) {
-      console.error(data);
-      return res.status(500).json({ error: "API Error" });
+      console.error("❌ OPENROUTER ERROR:", data);
+      return res.status(500).json({ error: data?.error || "API Error" });
     }
 
     const reply = data?.choices?.[0]?.message?.content || "No response";
@@ -54,7 +66,7 @@ router.post("/", async (req, res) => {
     res.json({ reply });
 
   } catch (error) {
-    console.error("ERROR:", error.message);
+    console.error("❌ SERVER ERROR:", error.message);
     res.status(500).json({ error: "Server error or timeout" });
   }
 });
