@@ -7,12 +7,20 @@ const chatRoutes = require("./routes/chat.routes");
 
 const app = express();
 
-// ✅ FIXED CORS (IMPORTANT)
-app.use(cors({
-  origin: "*",   // allow all (Vercel + local)
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type"],
-}));
+// ✅ PERFECT CORS FIX
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",   // local frontend
+    "https://your-frontend-url.vercel.app" // deployed frontend (change this)
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+// 🔥 IMPORTANT (preflight fix)
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
