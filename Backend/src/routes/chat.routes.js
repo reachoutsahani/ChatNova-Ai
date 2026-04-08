@@ -17,6 +17,11 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
+    console.time("AI Response");
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -24,15 +29,20 @@ router.post("/", async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-4o-mini",
+        model: "mistralai/mistral-7b-instruct", // ⚡ FAST MODEL
         messages: [
           ...(conversationHistory || []),
           { role: "user", content: message },
         ],
       }),
+      signal: controller.signal,
     });
 
+    clearTimeout(timeout);
+
     const data = await response.json();
+
+    console.timeEnd("AI Response");
 
     if (!response.ok) {
       console.error(data);
@@ -44,8 +54,8 @@ router.post("/", async (req, res) => {
     res.json({ reply });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
+    console.error("ERROR:", error.message);
+    res.status(500).json({ error: "Server error or timeout" });
   }
 });
 
