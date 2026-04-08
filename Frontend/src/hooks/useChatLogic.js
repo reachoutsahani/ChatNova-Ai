@@ -10,9 +10,9 @@ const useChatLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  // Load chats
+  // ================= LOAD CHATS =================
   useEffect(() => {
     const savedChats = localStorage.getItem("chat-history");
     if (savedChats) {
@@ -24,15 +24,41 @@ const useChatLogic = () => {
     }
   }, []);
 
-  // Save chats
+  // ================= SAVE CHATS =================
   useEffect(() => {
-    if (previousChats.length > 0) {
-      localStorage.setItem("chat-history", JSON.stringify(previousChats));
-    }
+    localStorage.setItem("chat-history", JSON.stringify(previousChats));
   }, [previousChats]);
 
+  // ================= AUTO SCROLL =================
+  useEffect(() => {
+    const chatEnd = document.getElementById("chat-end");
+    chatEnd?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // ================= TYPING EFFECT =================
+  const typeText = (text, messageId) => {
+    let index = 0;
+
+    const interval = setInterval(() => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, content: text.slice(0, index) }
+            : msg
+        )
+      );
+
+      index++;
+      if (index > text.length) {
+        clearInterval(interval);
+        setTypingMessageId(null);
+      }
+    }, 15);
+  };
+
+  // ================= SEND MESSAGE =================
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const messageContent = input.trim();
     const userMessageId = Date.now();
@@ -45,22 +71,22 @@ const useChatLogic = () => {
       timestamp: new Date().toLocaleTimeString(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const aiMessage = {
+      id: aiMessageId,
+      role: "ai",
+      content: "Typing...",
+      timestamp: new Date().toLocaleTimeString(),
+    };
+
+    // ✅ FIXED: single state update
+    setMessages((prev) => [...prev, userMessage, aiMessage]);
+
     setInput("");
     setError(null);
     setIsLoading(true);
 
-    const aiMessage = {
-      id: aiMessageId,
-      role: "ai",
-      content: "",
-      timestamp: new Date().toLocaleTimeString(),
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
-
     try {
-      const response = await fetch(`${API_URL}/api/chat/test`, {
+      const response = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,30 +101,49 @@ const useChatLogic = () => {
       }
 
       const data = await response.json();
-      const aiResponse = data.reply || data.message || "No response";
+      const aiResponse = data.reply || "No response";
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiMessageId
-            ? { ...msg, content: aiResponse }
-            : msg
-        )
-      );
+      // ================= TYPING EFFECT =================
+      setTypingMessageId(aiMessageId);
+      typeText(aiResponse, aiMessageId);
 
-      // Save new chat
+      // ================= SAVE CHAT =================
       if (!activeChat) {
         const chatId = Date.now();
+
         const newChat = {
           id: chatId,
           title:
             messageContent.slice(0, 30) +
             (messageContent.length > 30 ? "..." : ""),
+          messages: [
+            userMessage,
+            { ...aiMessage, content: aiResponse },
+          ],
           createdAt: new Date().toISOString(),
         };
+
         setPreviousChats((prev) => [newChat, ...prev]);
         setActiveChat(chatId);
+      } else {
+        setPreviousChats((prev) =>
+          prev.map((chat) =>
+            chat.id === activeChat
+              ? {
+                  ...chat,
+                  messages: [
+                    ...chat.messages,
+                    userMessage,
+                    { ...aiMessage, content: aiResponse },
+                  ],
+                }
+              : chat
+          )
+        );
       }
+
     } catch (err) {
+      console.error("API Error:", err);
       setError(err.message);
 
       setMessages((prev) =>
@@ -113,6 +158,7 @@ const useChatLogic = () => {
     }
   };
 
+  // ================= ENTER KEY =================
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -120,6 +166,7 @@ const useChatLogic = () => {
     }
   };
 
+  // ================= CHAT ACTIONS =================
   const handleNewChat = () => {
     setMessages([]);
     setInput("");
@@ -129,9 +176,11 @@ const useChatLogic = () => {
   };
 
   const handleSelectChat = (chatId) => {
+    const selectedChat = previousChats.find((chat) => chat.id === chatId);
+
     setActiveChat(chatId);
+    setMessages(selectedChat?.messages || []);
     setSidebarOpen(false);
-    setMessages([]);
     setInput("");
     setError(null);
   };
@@ -140,6 +189,10 @@ const useChatLogic = () => {
     setPreviousChats((prev) =>
       prev.filter((chat) => chat.id !== chatId)
     );
+
+    if (activeChat === chatId) {
+      handleNewChat();
+    }
   };
 
   const toggleSidebar = () => {
