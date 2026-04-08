@@ -10,9 +10,9 @@ const useChatLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // 🔥 FINAL FIX (NO localhost fallback)
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  // ================= LOAD CHATS =================
   useEffect(() => {
     const savedChats = localStorage.getItem("chat-history");
     if (savedChats) {
@@ -24,18 +24,15 @@ const useChatLogic = () => {
     }
   }, []);
 
-  // ================= SAVE CHATS =================
   useEffect(() => {
     localStorage.setItem("chat-history", JSON.stringify(previousChats));
   }, [previousChats]);
 
-  // ================= AUTO SCROLL =================
   useEffect(() => {
     const chatEnd = document.getElementById("chat-end");
     chatEnd?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ================= TYPING EFFECT =================
   const typeText = (text, messageId) => {
     let index = 0;
 
@@ -53,10 +50,9 @@ const useChatLogic = () => {
         clearInterval(interval);
         setTypingMessageId(null);
       }
-    }, 15);
+    }, 10);
   };
 
-  // ================= SEND MESSAGE =================
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -78,7 +74,6 @@ const useChatLogic = () => {
       timestamp: new Date().toLocaleTimeString(),
     };
 
-    // ✅ FIXED: single state update
     setMessages((prev) => [...prev, userMessage, aiMessage]);
 
     setInput("");
@@ -103,44 +98,8 @@ const useChatLogic = () => {
       const data = await response.json();
       const aiResponse = data.reply || "No response";
 
-      // ================= TYPING EFFECT =================
       setTypingMessageId(aiMessageId);
       typeText(aiResponse, aiMessageId);
-
-      // ================= SAVE CHAT =================
-      if (!activeChat) {
-        const chatId = Date.now();
-
-        const newChat = {
-          id: chatId,
-          title:
-            messageContent.slice(0, 30) +
-            (messageContent.length > 30 ? "..." : ""),
-          messages: [
-            userMessage,
-            { ...aiMessage, content: aiResponse },
-          ],
-          createdAt: new Date().toISOString(),
-        };
-
-        setPreviousChats((prev) => [newChat, ...prev]);
-        setActiveChat(chatId);
-      } else {
-        setPreviousChats((prev) =>
-          prev.map((chat) =>
-            chat.id === activeChat
-              ? {
-                  ...chat,
-                  messages: [
-                    ...chat.messages,
-                    userMessage,
-                    { ...aiMessage, content: aiResponse },
-                  ],
-                }
-              : chat
-          )
-        );
-      }
 
     } catch (err) {
       console.error("API Error:", err);
@@ -158,49 +117,11 @@ const useChatLogic = () => {
     }
   };
 
-  // ================= ENTER KEY =================
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
-  };
-
-  // ================= CHAT ACTIONS =================
-  const handleNewChat = () => {
-    setMessages([]);
-    setInput("");
-    setActiveChat(null);
-    setError(null);
-    setSidebarOpen(false);
-  };
-
-  const handleSelectChat = (chatId) => {
-    const selectedChat = previousChats.find((chat) => chat.id === chatId);
-
-    setActiveChat(chatId);
-    setMessages(selectedChat?.messages || []);
-    setSidebarOpen(false);
-    setInput("");
-    setError(null);
-  };
-
-  const handleDeleteChat = (chatId) => {
-    setPreviousChats((prev) =>
-      prev.filter((chat) => chat.id !== chatId)
-    );
-
-    if (activeChat === chatId) {
-      handleNewChat();
-    }
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen((prev) => !prev);
-  };
-
-  const closeSidebar = () => {
-    setSidebarOpen(false);
   };
 
   return {
@@ -214,15 +135,8 @@ const useChatLogic = () => {
     typingMessageId,
 
     setInput,
-    setError,
-
     handleSend,
     handleKeyPress,
-    handleNewChat,
-    handleSelectChat,
-    handleDeleteChat,
-    toggleSidebar,
-    closeSidebar,
   };
 };
 
