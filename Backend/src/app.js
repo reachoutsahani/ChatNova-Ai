@@ -7,11 +7,12 @@ const chatRoutes = require("./routes/chat.routes");
 
 const app = express();
 
-// ✅ FIXED CORS (IMPORTANT)
+// ✅ FINAL CORS FIX (LOCAL + VERCEL)
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://chat-nova-ai-uzn8.vercel.app" // 👈 ADD THIS
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
