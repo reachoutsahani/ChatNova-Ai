@@ -17,16 +17,19 @@ router.post("/", async (req, res) => {
 
     if (!process.env.GEMINI_API_KEY) {
       console.error("❌ GEMINI API KEY MISSING");
-      return res.status(500).json({ error: "API key not configured" });
+      return res.status(500).json({
+        reply: "Server error: API key missing",
+      });
     }
 
     if (!message) {
-      return res.status(400).json({ error: "Message is required" });
+      return res.status(400).json({
+        reply: "Message is required",
+      });
     }
 
     console.time("⚡ Gemini Response");
 
-    // 🔥 FAST MODEL
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
     });
@@ -37,14 +40,14 @@ router.post("/", async (req, res) => {
     console.timeEnd("⚡ Gemini Response");
 
     res.json({
-      reply: response.text(),
+      reply: response.text() || "No response from AI",
     });
 
   } catch (error) {
-    console.error("❌ SERVER ERROR:", error.message);
+    console.error("❌ SERVER ERROR FULL:", error);
 
     res.status(500).json({
-      error: "AI error or server issue",
+      reply: "⚠️ AI error, try again later",
     });
   }
 });
