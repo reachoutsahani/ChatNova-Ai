@@ -26,16 +26,20 @@ router.post("/", async (req, res) => {
     console.time("AI Response");
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
+    const timeout = setTimeout(() => controller.abort(), 15000);
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://chat-nova-ai-three.vercel.app", // 🔥 optional but good
+        "X-Title": "ChatNova"
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        // ✅ FIXED MODEL (WORKING)
+        model: "meta-llama/llama-3-8b-instruct",
+
         messages: [
           ...(conversationHistory || []),
           { role: "user", content: message },
@@ -58,7 +62,9 @@ router.post("/", async (req, res) => {
 
     if (!response.ok) {
       console.error("❌ OPENROUTER ERROR:", data);
-      return res.status(500).json({ error: data?.error || "API Error" });
+      return res.status(500).json({
+        error: data?.error?.message || "OpenRouter API Error"
+      });
     }
 
     const reply = data?.choices?.[0]?.message?.content || "No response";
