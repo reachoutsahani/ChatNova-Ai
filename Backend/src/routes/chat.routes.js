@@ -1,85 +1,51 @@
 const express = require("express");
 const router = express.Router();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3-8b-instruct";
+// 🔐 API KEY
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// ✅ TEST
+// ✅ TEST ROUTE
 router.get("/test", (req, res) => {
   res.json({ message: "Chat route working ✅" });
 });
 
-// ✅ CHAT
+// ✅ CHAT ROUTE
 router.post("/", async (req, res) => {
   try {
-    if (!OPENROUTER_API_KEY) {
-      console.error("❌ API KEY MISSING");
+    const { message } = req.body;
+
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("❌ GEMINI API KEY MISSING");
       return res.status(500).json({ error: "API key not configured" });
     }
-
-    const { message, conversationHistory } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    console.time("AI Response");
+    console.time("⚡ Gemini Response");
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    // 🔥 MAIN REQUEST
-    let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://chat-nova-ai-three.vercel.app",
-        "X-Title": "ChatNova"
-      },
-      body: JSON.stringify({
-        model: MODEL, // 🔥 env based
-        messages: [
-          ...(conversationHistory || []),
-          { role: "user", content: message },
-        ],
-      }),
-      signal: controller.signal,
+    // 🔥 FAST MODEL
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
 
-    let data = await response.json();
+    const result = await model.generateContent(message);
+    const response = await result.response;
 
-    // 🔥 AUTO FALLBACK (agar model fail ho)
-    if (!response.ok) {
-      console.warn("⚠️ Primary model failed, switching to fallback...");
+    console.timeEnd("⚡ Gemini Response");
 
-      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "meta-llama/llama-3-8b-instruct", // fallback
-          messages: [
-            ...(conversationHistory || []),
-            { role: "user", content: message },
-          ],
-        }),
-      });
-
-      data = await response.json();
-    }
-
-    console.timeEnd("AI Response");
-
-    const reply = data?.choices?.[0]?.message?.content || "No response";
-
-    res.json({ reply });
+    res.json({
+      reply: response.text(),
+    });
 
   } catch (error) {
     console.error("❌ SERVER ERROR:", error.message);
-    res.status(500).json({ error: "Server error or timeout" });
+
+    res.status(500).json({
+      error: "AI error or server issue",
+    });
   }
 });
 
