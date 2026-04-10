@@ -10,17 +10,14 @@ const useChatLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState(null);
 
-  // 🔥 FINAL FIX (NO localhost fallback)
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://chatnova-ai-hmq5.onrender.com";
 
   useEffect(() => {
     const savedChats = localStorage.getItem("chat-history");
     if (savedChats) {
-      try {
-        setPreviousChats(JSON.parse(savedChats));
-      } catch (err) {
-        console.error("Error loading chats:", err);
-      }
+      setPreviousChats(JSON.parse(savedChats));
     }
   }, []);
 
@@ -28,100 +25,58 @@ const useChatLogic = () => {
     localStorage.setItem("chat-history", JSON.stringify(previousChats));
   }, [previousChats]);
 
-  useEffect(() => {
-    const chatEnd = document.getElementById("chat-end");
-    chatEnd?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const typeText = (text, messageId) => {
-    let index = 0;
-
-    const interval = setInterval(() => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId
-            ? { ...msg, content: text.slice(0, index) }
-            : msg
-        )
-      );
-
-      index++;
-      if (index > text.length) {
-        clearInterval(interval);
-        setTypingMessageId(null);
-      }
-    }, 10);
-  };
-
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
     const messageContent = input.trim();
-    const userMessageId = Date.now();
-    const aiMessageId = Date.now() + 1;
-
-    const userMessage = {
-      id: userMessageId,
-      role: "user",
-      content: messageContent,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-
-    const aiMessage = {
-      id: aiMessageId,
-      role: "ai",
-      content: "Typing...",
-      timestamp: new Date().toLocaleTimeString(),
-    };
+    const userMessage = { role: "user", content: messageContent };
+    const aiMessage = { role: "ai", content: "Typing..." };
 
     setMessages((prev) => [...prev, userMessage, aiMessage]);
-
     setInput("");
-    setError(null);
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/chat`, {
+      const res = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          message: messageContent,
-        }),
+        body: JSON.stringify({ message: messageContent }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const aiResponse = data.reply || "No response";
-
-      setTypingMessageId(aiMessageId);
-      typeText(aiResponse, aiMessageId);
-
-    } catch (err) {
-      console.error("API Error:", err);
-      setError(err.message);
+      const data = await res.json();
 
       setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiMessageId
-            ? { ...msg, content: "⚠️ Error: Try again" }
+        prev.map((msg, i) =>
+          i === prev.length - 1
+            ? { ...msg, content: data.reply || "No response" }
             : msg
         )
       );
+    } catch (err) {
+      setError("Server error");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    if (e.key === "Enter") handleSend();
+  };
+
+  // 🔥 Added missing functions
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const closeSidebar = () => setSidebarOpen(false);
+  const handleNewChat = () => setMessages([]);
+
+  const handleSelectChat = (chat) => {
+    setMessages(chat.messages);
+    setActiveChat(chat.id);
+  };
+
+  const handleDeleteChat = (id) => {
+    setPreviousChats((prev) => prev.filter((c) => c.id !== id));
   };
 
   return {
@@ -135,8 +90,14 @@ const useChatLogic = () => {
     typingMessageId,
 
     setInput,
+    setError,
     handleSend,
     handleKeyPress,
+    handleNewChat,
+    handleSelectChat,
+    handleDeleteChat,
+    toggleSidebar,
+    closeSidebar,
   };
 };
 
