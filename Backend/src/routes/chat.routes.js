@@ -1,29 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-// 🔐 API KEY INIT
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ✅ TEST ROUTE
 router.get("/test", (req, res) => {
   res.json({ message: "Chat route working ✅" });
 });
 
-// ✅ CHAT ROUTE (FINAL FIXED)
+// ✅ FAST FREE AI ROUTE (OpenRouter AUTO)
 router.post("/", async (req, res) => {
   try {
     const { message } = req.body;
 
-    // ❌ API KEY CHECK
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("❌ GEMINI API KEY MISSING");
-      return res.json({
-        reply: "⚠️ Server config error (API key missing)",
-      });
-    }
-
-    // ❌ MESSAGE CHECK
+    // ❌ Message check
     if (!message || !message.trim()) {
       return res.json({
         reply: "⚠️ Message is required",
@@ -31,37 +19,38 @@ router.post("/", async (req, res) => {
     }
 
     console.log("📩 User:", message);
-    console.time("⚡ Gemini Response");
+    console.time("⚡ AI Response");
 
-    // 🔥 UPDATED MODEL
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest",
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "openrouter/auto", // 🔥 FASTEST FREE MODEL
+        messages: [
+          { role: "system", content: "Reply short and fast" },
+          { role: "user", content: message }
+        ]
+      })
     });
 
-    let replyText = "";
+    const data = await response.json();
 
-    try {
-      const result = await model.generateContent(message);
-      const response = await result.response;
-      replyText = response.text();
-    } catch (aiError) {
-      console.error("❌ Gemini Error:", aiError.message);
+    console.timeEnd("⚡ AI Response");
 
-      // 🔥 FALLBACK RESPONSE (VERY IMPORTANT)
-      replyText = `You said: ${message}`;
-    }
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      `You said: ${message}`;
 
-    console.timeEnd("⚡ Gemini Response");
-
-    res.json({
-      reply: replyText || "No response from AI",
-    });
+    res.json({ reply });
 
   } catch (error) {
     console.error("❌ SERVER ERROR:", error);
 
     res.json({
-      reply: "⚠️ Server error, try again later",
+      reply: "⚠️ AI error, try again",
     });
   }
 });
