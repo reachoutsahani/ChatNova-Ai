@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3-8b-instruct";
 
 // ✅ TEST
 router.get("/test", (req, res) => {
@@ -11,7 +12,6 @@ router.get("/test", (req, res) => {
 // ✅ CHAT
 router.post("/", async (req, res) => {
   try {
-    // 🔥 API KEY CHECK
     if (!OPENROUTER_API_KEY) {
       console.error("❌ API KEY MISSING");
       return res.status(500).json({ error: "API key not configured" });
@@ -28,18 +28,17 @@ router.post("/", async (req, res) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    // 🔥 MAIN REQUEST
+    let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://chat-nova-ai-three.vercel.app", // 🔥 optional but good
+        "HTTP-Referer": "https://chat-nova-ai-three.vercel.app",
         "X-Title": "ChatNova"
       },
       body: JSON.stringify({
-        // ✅ FIXED MODEL (WORKING)
-     model: "mistralai/mistral-7b-instruct:free",
-
+        model: MODEL, // 🔥 env based
         messages: [
           ...(conversationHistory || []),
           { role: "user", content: message },
@@ -48,24 +47,31 @@ router.post("/", async (req, res) => {
       signal: controller.signal,
     });
 
-    clearTimeout(timeout);
+    let data = await response.json();
 
-    let data;
-    try {
+    // 🔥 AUTO FALLBACK (agar model fail ho)
+    if (!response.ok) {
+      console.warn("⚠️ Primary model failed, switching to fallback...");
+
+      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "meta-llama/llama-3-8b-instruct", // fallback
+          messages: [
+            ...(conversationHistory || []),
+            { role: "user", content: message },
+          ],
+        }),
+      });
+
       data = await response.json();
-    } catch (err) {
-      console.error("❌ Invalid JSON");
-      return res.status(500).json({ error: "Invalid response from AI" });
     }
 
     console.timeEnd("AI Response");
-
-    if (!response.ok) {
-      console.error("❌ OPENROUTER ERROR:", data);
-      return res.status(500).json({
-        error: data?.error?.message || "OpenRouter API Error"
-      });
-    }
 
     const reply = data?.choices?.[0]?.message?.content || "No response";
 
