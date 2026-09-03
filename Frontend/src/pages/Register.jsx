@@ -18,6 +18,11 @@ const Register = () => {
 
   const navigate = useNavigate();
 
+  // Backend API URL
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://chatnova-ai-hmq5.onrender.com";
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -46,7 +51,7 @@ const Register = () => {
       setLoading(true);
       setError("");
 
-      const res = await fetch("http://localhost:3000/api/auth/register", {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,6 +73,7 @@ const Register = () => {
       navigate("/login");
 
     } catch (err) {
+      console.error("Registration Error:", err);
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -88,7 +94,9 @@ const Register = () => {
           </div>
 
           {error && (
-            <div className="alert alert-error">⚠ {error}</div>
+            <div className="alert alert-error">
+              ⚠ {error}
+            </div>
           )}
 
           <form onSubmit={handleSubmit} className="auth-form">
@@ -129,6 +137,7 @@ const Register = () => {
                 placeholder="Password"
                 className="form-input"
               />
+
               <button
                 type="button"
                 className="input-toggle"
@@ -167,7 +176,6 @@ const Register = () => {
           </div>
 
         </div>
-
       </div>
     </div>
   );
