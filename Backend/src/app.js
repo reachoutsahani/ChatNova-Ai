@@ -7,34 +7,32 @@ const chatRoutes = require("./routes/chat.routes");
 
 const app = express();
 
-// Allowed frontend origins
+// ===============================
+// CORS CONFIGURATION
+// ===============================
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-
   "https://chat-nova-ai-three.vercel.app",
   "https://chat-nova-ai-uzn8.vercel.app",
   "https://chat-nova-ai-git-main-reachoutsahanis-projects.vercel.app",
 ];
 
-// CORS Configuration
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests without origin (Postman, server-to-server)
+    origin: (origin, callback) => {
+      // Allow Postman / server requests
       if (!origin) {
         return callback(null, true);
       }
 
-      // Allow localhost
-      if (
-        origin === "http://localhost:5173" ||
-        origin === "http://localhost:3000"
-      ) {
+      // Allow exact origins
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // Allow all your Vercel deployments
+      // Allow all ChatNova Vercel deployments
       if (
         origin.startsWith("https://chat-nova-ai") &&
         origin.endsWith(".vercel.app")
@@ -43,7 +41,8 @@ app.use(
       }
 
       console.log("❌ CORS Blocked:", origin);
-      return callback(new Error("Not allowed by CORS"));
+
+      return callback(new Error(`Not allowed by CORS: ${origin}`));
     },
 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -57,16 +56,29 @@ app.use(
   })
 );
 
+// ===============================
+// MIDDLEWARE
+// ===============================
+
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+// ===============================
+// ROUTES
+// ===============================
+
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
 
-// Test route
+// ===============================
+// TEST ROUTE
+// ===============================
+
 app.get("/", (req, res) => {
-  res.send("API Working ✅");
+  res.status(200).json({
+    success: true,
+    message: "ChatNova API is working 🚀",
+  });
 });
 
 module.exports = app;
