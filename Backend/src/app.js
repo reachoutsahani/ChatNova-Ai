@@ -7,7 +7,6 @@ const chatRoutes = require("./routes/chat.routes");
 
 const app = express();
 
-// 🔥 FINAL CORS FIX (ALL CASES COVERED)
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -16,33 +15,35 @@ const allowedOrigins = [
   "https://chat-nova-ai-git-main-reachoutsahanis-projects.vercel.app"
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Postman / mobile apps ke liye allow
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Browser ke bahar requests ke liye
+      if (!origin) {
+        return callback(null, true);
+      }
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
       console.log("❌ Blocked by CORS:", origin);
-      callback(null, true); // 🔥 allow anyway (safe for now)
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
 
-// 🔥 IMPORTANT (preflight requests fix)
-app.options("*", cors());
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ ROUTES
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
 
-// ✅ TEST ROUTE
+// Test route
 app.get("/", (req, res) => {
   res.send("API Working ✅");
 });
