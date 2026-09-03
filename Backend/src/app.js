@@ -22,19 +22,19 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow Postman / server requests
+      // Postman / server requests
       if (!origin) {
         return callback(null, true);
       }
 
-      // Allow exact origins
+      // Exact allowed origins
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
       // Allow all ChatNova Vercel deployments
       if (
-        origin.startsWith("https://chat-nova-ai") &&
+        origin.startsWith("https://chat-nova-") &&
         origin.endsWith(".vercel.app")
       ) {
         return callback(null, true);
@@ -47,10 +47,7 @@ app.use(
 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-    ],
+    allowedHeaders: ["Content-Type", "Authorization"],
 
     credentials: true,
   })
