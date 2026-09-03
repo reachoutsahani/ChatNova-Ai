@@ -18,10 +18,10 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  // Backend API URL
+  // Render Backend API URL
   const API_URL =
     import.meta.env.VITE_API_URL ||
-    "https://chatnova-ai-hmq5.onrender.com";
+    "https://chatnova-ai-1-pmt0.onrender.com";
 
   const handleChange = (e) => {
     setFormData({
@@ -33,18 +33,28 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { firstName, lastName, email, password, confirmPassword } = formData;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+    } = formData;
 
+    // Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      return setError("All fields are required");
+      setError("All fields are required");
+      return;
     }
 
     if (password !== confirmPassword) {
-      return setError("Passwords do not match");
+      setError("Passwords do not match");
+      return;
     }
 
     if (password.length < 6) {
-      return setError("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters");
+      return;
     }
 
     try {
@@ -70,6 +80,7 @@ const Register = () => {
         throw new Error(data.message || "Registration failed");
       }
 
+      // Registration successful
       navigate("/login");
 
     } catch (err) {
