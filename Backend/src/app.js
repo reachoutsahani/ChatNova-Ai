@@ -7,32 +7,53 @@ const chatRoutes = require("./routes/chat.routes");
 
 const app = express();
 
+// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://chat-nova-ai-uzn8.vercel.app",
+
   "https://chat-nova-ai-three.vercel.app",
-  "https://chat-nova-ai-git-main-reachoutsahanis-projects.vercel.app"
+  "https://chat-nova-ai-uzn8.vercel.app",
+  "https://chat-nova-ai-git-main-reachoutsahanis-projects.vercel.app",
 ];
 
+// CORS Configuration
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Browser ke bahar requests ke liye
+    origin: function (origin, callback) {
+      // Allow requests without origin (Postman, server-to-server)
       if (!origin) {
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      // Allow localhost
+      if (
+        origin === "http://localhost:5173" ||
+        origin === "http://localhost:3000"
+      ) {
         return callback(null, true);
       }
 
-      console.log("❌ Blocked by CORS:", origin);
+      // Allow all your Vercel deployments
+      if (
+        origin.startsWith("https://chat-nova-ai") &&
+        origin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
 
+      console.log("❌ CORS Blocked:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
+
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+
+    credentials: true,
   })
 );
 
