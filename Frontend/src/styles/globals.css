@@ -1,99 +1,123 @@
-/* ============================================
-   GLOBAL BOX MODEL RESET
-   ============================================ */
+@import "./theme.css";
+
+/* ==============================
+   RESET
+============================== */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+html {
+  scroll-behavior: smooth;
 }
 
+/* ==============================
+   BODY
+============================== */
+
 body {
+  margin: 0;
+
+  min-width: 320px;
+  min-height: 100vh;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    var(--gradient-background),
+    var(--bg-primary);
+
+  color: var(--text-primary);
+
   overflow-x: hidden;
 }
 
-/* ============================================
-   🔥 CENTER AUTH PAGE (FIXED + RESPONSIVE)
-============================================ */
-.center-page {
+/* ==============================
+   ROOT
+============================== */
+
+#root {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
 }
 
-/* 📱 Mobile Fix */
-@media (max-width: 768px) {
-  .center-page {
-    padding: 16px;
-    align-items: flex-start; /* top se start */
-  }
+/* ==============================
+   BUTTON
+============================== */
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+
+  border: none;
+
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
-/* ============================================
-   🔥 BACKGROUND GLOW EFFECT (OPTIMIZED)
-============================================ */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(120px);
-  z-index: -1;
-  pointer-events: none;
+button:hover {
+  transform: translateY(-1px);
 }
 
-/* Desktop Glow */
-body::before {
-  width: 400px;
-  height: 400px;
-  background: #25242c;
-  top: -100px;
-  right: -100px;
+button:active {
+  transform: translateY(0);
 }
 
-body::after {
-  width: 300px;
-  height: 300px;
-  background: #1c1c1d;
-  bottom: -100px;
-  left: -100px;
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-/* 📱 Tablet & Mobile Optimization */
-@media (max-width: 768px) {
-  body::before {
-    width: 200px;
-    height: 200px;
-    filter: blur(80px);
-    top: -50px;
-    right: -50px;
-  }
+/* ==============================
+   INPUT
+============================== */
 
-  body::after {
-    width: 180px;
-    height: 180px;
-    filter: blur(80px);
-    bottom: -50px;
-    left: -50px;
-  }
+input,
+textarea {
+  font-family: inherit;
 }
 
-/* 📱 Small Mobile (Performance Boost) */
-@media (max-width: 480px) {
-  body::before,
-  body::after {
-    display: none;
-  }
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+/* ==============================
+   SCROLLBAR
+============================== */
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ==============================
+   TEXT SELECTION
+============================== */
+
+::selection {
+  background: var(--primary);
+  color: white;
 }
